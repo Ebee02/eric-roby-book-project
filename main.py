@@ -33,8 +33,17 @@ async def read_books_by_category(category: str):
     return books_to_return
 
 
+@app.get("/books/book_author/")
+async def fetch_books_by_author(book_author: str):
+    books_to_return = []
+    for book in BOOKS:
+        if book.get("author").casefold() == book_author.casefold():
+            books_to_return.append(book)
+    return books_to_return
+
+
 @app.get("/books/{book_author}/")
-async def fetch_books_by_author(book_author: str, category: str):
+async def fetch_books_by_author_and_category(book_author: str, category: str):
     books_to_return = []
     for book in BOOKS:
         if (
