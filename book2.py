@@ -1,5 +1,5 @@
 from typing import Optional
-from fastapi import FastAPI, Path
+from fastapi import FastAPI, Path, Query
 from pydantic import BaseModel, Field
 
 
@@ -29,7 +29,7 @@ class BookRequest(BaseModel):
     author: str = Field(min_length=1)
     description: str = Field(min_length=1, max_length=100)
     rating: int = Field(gt=0, lt=6)
-    published_date: int = Field()
+    published_date: int = Field(gt=1999, lt=2031)
 
     model_config = {
         "json_schema_extra": {
@@ -67,7 +67,7 @@ async def read_book(book_id: int = Path(gt=0)):
 
 
 @app.get("/books/")
-async def fetch_book_by_rating(book_rating: int):
+async def fetch_book_by_rating(book_rating: int = Query(gt=0, lt=6)):
     books_to_return = []
     for book in BOOKS:
         if book.rating == book_rating:
@@ -76,7 +76,7 @@ async def fetch_book_by_rating(book_rating: int):
 
 
 @app.get("/books/published_date/")
-async def fetch_book_by_published_date(published_date: int):
+async def fetch_book_by_published_date(published_date: int = Query(gt=1999, lt=2031)):
     books_to_return = []
     for book in BOOKS:
         if book.published_date == published_date:
@@ -106,7 +106,7 @@ async def update_book(update_book_request: BookRequest):
 
 
 @app.delete("/books/delete/")
-async def delete_book(book_id: int):
+async def delete_book(book_id: int = Query(gt=0)):
     for i in range(len(BOOKS)):
         if BOOKS[i].id == book_id:
             BOOKS.pop(i)
